@@ -103,6 +103,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'admin') {
         <button onclick="closeEditUserModal()">Cancel</button>
     </div>
 
+
     <script src="users.js"></script>
     <script>
         function goBack() {
