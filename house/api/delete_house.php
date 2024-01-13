@@ -6,12 +6,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
 
     $houseId = $_DELETE['house_id'];
 
-    $stmt = $conn->prepare("DELETE FROM houses WHERE house_id = ?");
-    $stmt->bind_param("i", $houseId);
-    $stmt->execute();
+    // Fetch property type and property id before deleting the house
+    $fetchStmt = $conn->prepare("SELECT property_type, property_id FROM rented_and_sold WHERE property_type = 'house' AND property_id = ?");
+    $fetchStmt->bind_param("i", $houseId);
+    $fetchStmt->execute();
+    $fetchStmt->bind_result($propertyType, $propertyId);
+    $fetchStmt->fetch();
+    $fetchStmt->close();
 
-    if ($stmt->affected_rows > 0) {
+    $deleteStmt = $conn->prepare("DELETE FROM houses WHERE house_id = ?");
+    $deleteStmt->bind_param("i", $houseId);
+    $deleteStmt->execute();
+
+    if ($deleteStmt->affected_rows > 0) {
         $response = array('status' => 'success', 'message' => 'House deleted successfully');
+
+        // If the house was found in rented_and_sold, delete it from there as well
+        if ($propertyType === 'house' && $propertyId == $houseId) {
+            $deleteRentedAndSoldStmt = $conn->prepare("DELETE FROM rented_and_sold WHERE property_type = 'house' AND property_id = ?");
+            $deleteRentedAndSoldStmt->bind_param("i", $houseId);
+            $deleteRentedAndSoldStmt->execute();
+        }
     } else {
         $response = array('status' => 'error', 'message' => 'Failed to delete house');
     }

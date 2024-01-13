@@ -1,18 +1,18 @@
-// houses.js
+// apartments.js
 
 $(document).ready(function () {
-  fetchHouses();
+  fetchApartments();
 });
 
-function openAddHouseModal() {
-  $("#addHouseModal").show();
+function openAddApartmentModal() {
+  $("#addApartmentModal").show();
 }
 
-function closeAddHouseModal() {
-  $("#addHouseModal").hide();
+function closeAddApartmentModal() {
+  $("#addApartmentModal").hide();
 }
 
-function addHouse() {
+function addApartment() {
   var location = $("#addLocation").val();
   var area = $("#addArea").val();
   var width = $("#addWidth").val();
@@ -25,7 +25,7 @@ function addHouse() {
 
   $.ajax({
     type: "POST",
-    url: "api/add_house.php",
+    url: "api/add_apartment.php",
     data: {
       location: location,
       area: area,
@@ -40,93 +40,95 @@ function addHouse() {
     dataType: "json",
     success: function (response) {
       if (response.status === "success") {
-        alert("House added successfully");
-        closeAddHouseModal();
-        fetchHouses();
+        alert("Apartment added successfully");
+        closeAddApartmentModal();
+        fetchApartments();
       } else {
-        alert("Error adding house: " + response.message);
+        alert("Error adding apartment: " + response.message);
       }
     },
     error: function (xhr, status, error) {
-      alert("Error adding house. Status: " + status + ", Error: " + error);
+      alert("Error adding apartment. Status: " + status + ", Error: " + error);
     },
   });
 }
 
-function fetchHouses() {
+function fetchApartments() {
   $.ajax({
     type: "GET",
-    url: "api/get_houses.php", // Adjust the API URL accordingly
+    url: "api/get_apartments.php", // Adjust the API URL accordingly
     dataType: "json",
     success: function (response) {
-      updateHouseTable(response);
+      updateApartmentTable(response);
     },
     error: function (xhr, status, error) {
-      alert("Error fetching houses. Status: " + status + ", Error: " + error);
+      alert(
+        "Error fetching apartments. Status: " + status + ", Error: " + error
+      );
     },
   });
 }
 
-function updateHouseTable(houses) {
-  var tableBody = $("#houseTableBody");
+function updateApartmentTable(apartments) {
+  var tableBody = $("#apartmentTableBody");
   tableBody.empty();
 
-  for (var i = 0; i < houses.length; i++) {
-    var house = houses[i];
+  for (var i = 0; i < apartments.length; i++) {
+    var apartment = apartments[i];
     var availabilityButtons = "";
 
-    if (house.house_status === "for sell") {
+    if (apartment.apartment_status === "for sell") {
       availabilityButtons +=
         "<button class='sell-button' onclick='openSellModal(" +
-        house.house_id +
+        apartment.apartment_id +
         ")'>Sell</button>";
-    } else if (house.house_status === "for rent") {
+    } else if (apartment.apartment_status === "for rent") {
       availabilityButtons +=
         "<button class='rent-button' onclick='openRentModal(" +
-        house.house_id +
+        apartment.apartment_id +
         ")'>Rent</button>";
     }
 
     var row =
       "<tr" +
-      (house.house_availability == "not available"
+      (apartment.apartment_availability == "not available"
         ? " style='background-color: pink;'"
         : "") +
       ">" +
       "<td>" +
-      house.house_id +
+      apartment.apartment_id +
       "</td>" +
       "<td>" +
-      house.house_location +
+      apartment.apartment_location +
       "</td>" +
       "<td>" +
-      house.house_area +
+      apartment.apartment_area +
       "</td>" +
       "<td>" +
-      house.house_width +
+      apartment.apartment_width +
       "</td>" +
       "<td>" +
-      house.house_length +
+      apartment.apartment_length +
       "</td>" +
       "<td>" +
-      house.house_availability +
+      apartment.apartment_availability +
       "</td>" +
       "<td>" +
-      house.house_price +
+      apartment.apartment_price +
       "</td>" +
       "<td>" +
-      house.seller_name +
+      apartment.seller_name +
       "</td>" +
       "<td>" +
-      house.seller_phone +
+      apartment.seller_phone +
       "</td>" +
       "<td>" +
       availabilityButtons +
-      "<button class='edit-button' onclick='openEditHouseModal(" +
-      house.house_id +
+      "<button class='edit-button' onclick='openEditApartmentModal(" +
+      apartment.apartment_id +
       ")'>Edit</button>" +
-      "<button class='delete-button' onclick='deleteHouse(" +
-      house.house_id +
+      "<button class='delete-button' onclick='deleteApartment(" +
+      apartment.apartment_id +
       ")'>Delete</button>" +
       "</td>" +
       "</tr>";
@@ -135,36 +137,38 @@ function updateHouseTable(houses) {
   }
 }
 
-function deleteHouse(houseId) {
+function deleteApartment(apartmentId) {
   // Ask for confirmation
   var confirmDelete = window.confirm(
-    "Are you sure you want to delete this house?"
+    "Are you sure you want to delete this apartment?"
   );
 
   if (confirmDelete) {
     // Proceed with deletion
     $.ajax({
       type: "DELETE",
-      url: "api/delete_house.php",
-      data: { house_id: houseId },
+      url: "api/delete_apartment.php",
+      data: { apartment_id: apartmentId },
       dataType: "json",
       success: function (response) {
         if (response.status === "success") {
-          alert("House deleted successfully");
-          fetchHouses();
+          alert("Apartment deleted successfully");
+          fetchApartments();
         } else {
-          alert("Error deleting house: " + response.message);
+          alert("Error deleting apartment: " + response.message);
         }
       },
       error: function (xhr, status, error) {
-        alert("Error deleting house. Status: " + status + ", Error: " + error);
+        alert(
+          "Error deleting apartment. Status: " + status + ", Error: " + error
+        );
       },
     });
   }
 }
 
-function editHouse() {
-  var houseId = $("#editHouseId").val();
+function editApartment() {
+  var apartmentId = $("#editApartmentId").val();
   var location = $("#editLocation").val();
   var area = $("#editArea").val();
   var width = $("#editWidth").val();
@@ -178,7 +182,7 @@ function editHouse() {
   var sellerPhone = $("#editSellerPhone").val();
 
   console.log("Data to be sent:", {
-    house_id: houseId,
+    apartment_id: apartmentId,
     location: location,
     area: area,
     width: width,
@@ -192,9 +196,9 @@ function editHouse() {
 
   $.ajax({
     type: "PUT",
-    url: "api/edit_house.php",
+    url: "api/edit_apartment.php",
     data: {
-      house_id: houseId,
+      apartment_id: apartmentId,
       location: location,
       area: area,
       width: width,
@@ -208,72 +212,83 @@ function editHouse() {
     dataType: "json",
     success: function (response) {
       if (response.status === "success") {
-        alert("House updated successfully");
-        closeEditHouseModal();
-        fetchHouses();
+        alert("Apartment updated successfully");
+        closeEditApartmentModal();
+        fetchApartments();
       } else {
-        alert("Error updating house: " + response.message);
-      }
-    },
-    error: function (xhr, status, error) {
-      alert("Error updating house. Status: " + status + ", Error: " + error);
-    },
-  });
-}
-
-function openEditHouseModal(houseId) {
-  // Fetch the house details for editing
-  $.ajax({
-    type: "GET",
-    url: "api/get_house.php",
-    data: { house_id: houseId },
-    dataType: "json",
-    success: function (response) {
-      if (response.status === "success") {
-        var house = response.house;
-
-        // Populate the edit modal fields with house details
-        $("#editHouseId").val(house.house_id);
-        $("#editLocation").val(house.house_location);
-        $("#editArea").val(house.house_area);
-        $("#editWidth").val(house.house_width);
-        $("#editLength").val(house.house_length);
-        $("#editSellerName").val(house.seller_name);
-        $("#editSellerPhone").val(house.seller_phone);
-
-        $("#editForSell").prop("checked", house.house_status === "for sell");
-        $("#editForRent").prop("checked", house.house_status === "for rent");
-        $("#editPrice").val(house.house_price);
-
-        // Show the edit modal
-        $("#editHouseModal").show();
-      } else {
-        alert("Error fetching house details: " + response.message);
+        alert("Error updating apartment: " + response.message);
       }
     },
     error: function (xhr, status, error) {
       alert(
-        "Error fetching house details. Status: " + status + ", Error: " + error
+        "Error updating apartment. Status: " + status + ", Error: " + error
       );
     },
   });
 }
 
-function closeEditHouseModal() {
-  $("#editHouseModal").hide();
+function openEditApartmentModal(apartmentId) {
+  // Fetch the apartment details for editing
+  $.ajax({
+    type: "GET",
+    url: "api/get_apartment.php",
+    data: { apartment_id: apartmentId },
+    dataType: "json",
+    success: function (response) {
+      if (response.status === "success") {
+        var apartment = response.apartment;
+
+        // Populate the edit modal fields with apartment details
+        $("#editApartmentId").val(apartment.apartment_id);
+        $("#editLocation").val(apartment.apartment_location);
+        $("#editArea").val(apartment.apartment_area);
+        $("#editWidth").val(apartment.apartment_width);
+        $("#editLength").val(apartment.apartment_length);
+        $("#editSellerName").val(apartment.seller_name);
+        $("#editSellerPhone").val(apartment.seller_phone);
+
+        $("#editForSell").prop(
+          "checked",
+          apartment.apartment_status === "for sell"
+        );
+        $("#editForRent").prop(
+          "checked",
+          apartment.apartment_status === "for rent"
+        );
+        $("#editPrice").val(apartment.apartment_price);
+
+        // Show the edit modal
+        $("#editApartmentModal").show();
+      } else {
+        alert("Error fetching apartment details: " + response.message);
+      }
+    },
+    error: function (xhr, status, error) {
+      alert(
+        "Error fetching apartment details. Status: " +
+          status +
+          ", Error: " +
+          error
+      );
+    },
+  });
 }
 
-function searchHouses() {
+function closeEditApartmentModal() {
+  $("#editApartmentModal").hide();
+}
+
+function searchApartments() {
   var searchQuery = document.getElementById("searchQuery").value;
 
   $.ajax({
     type: "GET",
-    url: "api/search_house.php",
+    url: "api/search_apartment.php",
     data: { search_query: searchQuery },
     dataType: "json",
     success: function (response) {
       if (response.status === "success") {
-        updateHouseTable(response.houses);
+        updateApartmentTable(response.apartments);
       } else {
         alert(response.message);
       }
@@ -286,9 +301,9 @@ function searchHouses() {
 
 // Add the following functions
 
-function openSellModal(houseId) {
+function openSellModal(apartmentId) {
   $("#sellModal").show();
-  $("#sellHouseId").val(houseId);
+  $("#sellApartmentId").val(apartmentId);
 }
 
 function closeSellModal() {
@@ -299,8 +314,8 @@ function closeSellModal() {
   $("#paymentStatusSell").val("paid");
 }
 
-function sellHouse() {
-  var houseId = $("#sellHouseId").val();
+function sellApartment() {
+  var apartmentId = $("#sellApartmentId").val();
   var buyerName = $("#buyerName").val();
   var buyerPhone = $("#buyerPhone").val();
   var paymentStatus = $("#paymentStatusSell").val();
@@ -309,31 +324,31 @@ function sellHouse() {
     type: "POST",
     url: "api/sell_and_rent.php",
     data: {
-      house_id: houseId,
+      apartment_id: apartmentId,
       buyer_name: buyerName,
       buyer_phone: buyerPhone,
       payment_status: paymentStatus,
-      house_availability: "sold",
+      apartment_availability: "sold",
     },
     dataType: "json",
     success: function (response) {
       if (response.status === "success") {
-        alert("House sold successfully");
+        alert("Apartment sold successfully");
         closeSellModal();
-        fetchHouses();
+        fetchApartments();
       } else {
-        alert("Error selling house: " + response.message);
+        alert("Error selling apartment: " + response.message);
       }
     },
     error: function (xhr, status, error) {
-      alert("Error selling house. Status: " + status + ", Error: " + error);
+      alert("Error selling apartment. Status: " + status + ", Error: " + error);
     },
   });
 }
 
-function openRentModal(houseId) {
+function openRentModal(apartmentId) {
   $("#rentModal").show();
-  $("#rentHouseId").val(houseId);
+  $("#rentApartmentId").val(apartmentId);
 }
 function closeRentModal() {
   $("#rentModal").hide();
@@ -343,8 +358,8 @@ function closeRentModal() {
   $("#paymentStatusRent").val("paid");
 }
 
-function rentHouse() {
-  var houseId = $("#rentHouseId").val();
+function rentApartment() {
+  var apartmentId = $("#rentApartmentId").val();
   var tenantName = $("#tenantName").val();
   var tenantPhone = $("#tenantPhone").val();
   var paymentStatus = $("#paymentStatusRent").val();
@@ -353,24 +368,24 @@ function rentHouse() {
     type: "POST",
     url: "api/sell_and_rent.php",
     data: {
-      house_id: houseId,
+      apartment_id: apartmentId,
       buyer_name: tenantName,
       buyer_phone: tenantPhone,
       payment_status: paymentStatus,
-      house_availability: "rented",
+      apartment_availability: "rented",
     },
     dataType: "json",
     success: function (response) {
       if (response.status === "success") {
-        alert("House rented successfully");
+        alert("Apartment rented successfully");
         closeRentModal();
-        fetchHouses();
+        fetchApartments();
       } else {
-        alert("Error renting house: " + response.message);
+        alert("Error renting apartment: " + response.message);
       }
     },
     error: function (xhr, status, error) {
-      alert("Error renting house. Status: " + status + ", Error: " + error);
+      alert("Error renting apartment. Status: " + status + ", Error: " + error);
     },
   });
 }

@@ -1,18 +1,18 @@
-// houses.js
+// lands.js
 
 $(document).ready(function () {
-  fetchHouses();
+  fetchLands();
 });
 
-function openAddHouseModal() {
-  $("#addHouseModal").show();
+function openAddLandModal() {
+  $("#addLandModal").show();
 }
 
-function closeAddHouseModal() {
-  $("#addHouseModal").hide();
+function closeAddLandModal() {
+  $("#addLandModal").hide();
 }
 
-function addHouse() {
+function addLand() {
   var location = $("#addLocation").val();
   var area = $("#addArea").val();
   var width = $("#addWidth").val();
@@ -25,7 +25,7 @@ function addHouse() {
 
   $.ajax({
     type: "POST",
-    url: "api/add_house.php",
+    url: "api/add_land.php",
     data: {
       location: location,
       area: area,
@@ -40,93 +40,93 @@ function addHouse() {
     dataType: "json",
     success: function (response) {
       if (response.status === "success") {
-        alert("House added successfully");
-        closeAddHouseModal();
-        fetchHouses();
+        alert("Land added successfully");
+        closeAddLandModal();
+        fetchLands();
       } else {
-        alert("Error adding house: " + response.message);
+        alert("Error adding land: " + response.message);
       }
     },
     error: function (xhr, status, error) {
-      alert("Error adding house. Status: " + status + ", Error: " + error);
+      alert("Error adding land. Status: " + status + ", Error: " + error);
     },
   });
 }
 
-function fetchHouses() {
+function fetchLands() {
   $.ajax({
     type: "GET",
-    url: "api/get_houses.php", // Adjust the API URL accordingly
+    url: "api/get_lands.php", // Adjust the API URL accordingly
     dataType: "json",
     success: function (response) {
-      updateHouseTable(response);
+      updateLandTable(response);
     },
     error: function (xhr, status, error) {
-      alert("Error fetching houses. Status: " + status + ", Error: " + error);
+      alert("Error fetching lands. Status: " + status + ", Error: " + error);
     },
   });
 }
 
-function updateHouseTable(houses) {
-  var tableBody = $("#houseTableBody");
+function updateLandTable(lands) {
+  var tableBody = $("#landTableBody");
   tableBody.empty();
 
-  for (var i = 0; i < houses.length; i++) {
-    var house = houses[i];
+  for (var i = 0; i < lands.length; i++) {
+    var land = lands[i];
     var availabilityButtons = "";
 
-    if (house.house_status === "for sell") {
+    if (land.land_status === "for sell") {
       availabilityButtons +=
         "<button class='sell-button' onclick='openSellModal(" +
-        house.house_id +
+        land.land_id +
         ")'>Sell</button>";
-    } else if (house.house_status === "for rent") {
+    } else if (land.land_status === "for rent") {
       availabilityButtons +=
         "<button class='rent-button' onclick='openRentModal(" +
-        house.house_id +
+        land.land_id +
         ")'>Rent</button>";
     }
 
     var row =
       "<tr" +
-      (house.house_availability == "not available"
+      (land.land_availability == "not available"
         ? " style='background-color: pink;'"
         : "") +
       ">" +
       "<td>" +
-      house.house_id +
+      land.land_id +
       "</td>" +
       "<td>" +
-      house.house_location +
+      land.land_location +
       "</td>" +
       "<td>" +
-      house.house_area +
+      land.land_area +
       "</td>" +
       "<td>" +
-      house.house_width +
+      land.land_width +
       "</td>" +
       "<td>" +
-      house.house_length +
+      land.land_length +
       "</td>" +
       "<td>" +
-      house.house_availability +
+      land.land_availability +
       "</td>" +
       "<td>" +
-      house.house_price +
+      land.land_price +
       "</td>" +
       "<td>" +
-      house.seller_name +
+      land.seller_name +
       "</td>" +
       "<td>" +
-      house.seller_phone +
+      land.seller_phone +
       "</td>" +
       "<td>" +
       availabilityButtons +
-      "<button class='edit-button' onclick='openEditHouseModal(" +
-      house.house_id +
+      "<button class='edit-button' onclick='openEditLandModal(" +
+      land.land_id +
       ")'>Edit</button>" +
-      "<button class='delete-button' onclick='deleteHouse(" +
-      house.house_id +
+      "<button class='delete-button' onclick='deleteLand(" +
+      land.land_id +
       ")'>Delete</button>" +
       "</td>" +
       "</tr>";
@@ -135,36 +135,36 @@ function updateHouseTable(houses) {
   }
 }
 
-function deleteHouse(houseId) {
+function deleteLand(landId) {
   // Ask for confirmation
   var confirmDelete = window.confirm(
-    "Are you sure you want to delete this house?"
+    "Are you sure you want to delete this land?"
   );
 
   if (confirmDelete) {
     // Proceed with deletion
     $.ajax({
       type: "DELETE",
-      url: "api/delete_house.php",
-      data: { house_id: houseId },
+      url: "api/delete_land.php",
+      data: { land_id: landId },
       dataType: "json",
       success: function (response) {
         if (response.status === "success") {
-          alert("House deleted successfully");
-          fetchHouses();
+          alert("Land deleted successfully");
+          fetchLands();
         } else {
-          alert("Error deleting house: " + response.message);
+          alert("Error deleting land: " + response.message);
         }
       },
       error: function (xhr, status, error) {
-        alert("Error deleting house. Status: " + status + ", Error: " + error);
+        alert("Error deleting land. Status: " + status + ", Error: " + error);
       },
     });
   }
 }
 
-function editHouse() {
-  var houseId = $("#editHouseId").val();
+function editLand() {
+  var landId = $("#editLandId").val();
   var location = $("#editLocation").val();
   var area = $("#editArea").val();
   var width = $("#editWidth").val();
@@ -178,7 +178,7 @@ function editHouse() {
   var sellerPhone = $("#editSellerPhone").val();
 
   console.log("Data to be sent:", {
-    house_id: houseId,
+    land_id: landId,
     location: location,
     area: area,
     width: width,
@@ -192,9 +192,9 @@ function editHouse() {
 
   $.ajax({
     type: "PUT",
-    url: "api/edit_house.php",
+    url: "api/edit_land.php",
     data: {
-      house_id: houseId,
+      land_id: landId,
       location: location,
       area: area,
       width: width,
@@ -208,72 +208,72 @@ function editHouse() {
     dataType: "json",
     success: function (response) {
       if (response.status === "success") {
-        alert("House updated successfully");
-        closeEditHouseModal();
-        fetchHouses();
+        alert("Land updated successfully");
+        closeEditLandModal();
+        fetchLands();
       } else {
-        alert("Error updating house: " + response.message);
+        alert("Error updating land: " + response.message);
       }
     },
     error: function (xhr, status, error) {
-      alert("Error updating house. Status: " + status + ", Error: " + error);
+      alert("Error updating land. Status: " + status + ", Error: " + error);
     },
   });
 }
 
-function openEditHouseModal(houseId) {
-  // Fetch the house details for editing
+function openEditLandModal(landId) {
+  // Fetch the land details for editing
   $.ajax({
     type: "GET",
-    url: "api/get_house.php",
-    data: { house_id: houseId },
+    url: "api/get_land.php",
+    data: { land_id: landId },
     dataType: "json",
     success: function (response) {
       if (response.status === "success") {
-        var house = response.house;
+        var land = response.land;
 
-        // Populate the edit modal fields with house details
-        $("#editHouseId").val(house.house_id);
-        $("#editLocation").val(house.house_location);
-        $("#editArea").val(house.house_area);
-        $("#editWidth").val(house.house_width);
-        $("#editLength").val(house.house_length);
-        $("#editSellerName").val(house.seller_name);
-        $("#editSellerPhone").val(house.seller_phone);
+        // Populate the edit modal fields with land details
+        $("#editLandId").val(land.land_id);
+        $("#editLocation").val(land.land_location);
+        $("#editArea").val(land.land_area);
+        $("#editWidth").val(land.land_width);
+        $("#editLength").val(land.land_length);
+        $("#editSellerName").val(land.seller_name);
+        $("#editSellerPhone").val(land.seller_phone);
 
-        $("#editForSell").prop("checked", house.house_status === "for sell");
-        $("#editForRent").prop("checked", house.house_status === "for rent");
-        $("#editPrice").val(house.house_price);
+        $("#editForSell").prop("checked", land.land_status === "for sell");
+        $("#editForRent").prop("checked", land.land_status === "for rent");
+        $("#editPrice").val(land.land_price);
 
         // Show the edit modal
-        $("#editHouseModal").show();
+        $("#editLandModal").show();
       } else {
-        alert("Error fetching house details: " + response.message);
+        alert("Error fetching land details: " + response.message);
       }
     },
     error: function (xhr, status, error) {
       alert(
-        "Error fetching house details. Status: " + status + ", Error: " + error
+        "Error fetching land details. Status: " + status + ", Error: " + error
       );
     },
   });
 }
 
-function closeEditHouseModal() {
-  $("#editHouseModal").hide();
+function closeEditLandModal() {
+  $("#editLandModal").hide();
 }
 
-function searchHouses() {
+function searchLands() {
   var searchQuery = document.getElementById("searchQuery").value;
 
   $.ajax({
     type: "GET",
-    url: "api/search_house.php",
+    url: "api/search_land.php",
     data: { search_query: searchQuery },
     dataType: "json",
     success: function (response) {
       if (response.status === "success") {
-        updateHouseTable(response.houses);
+        updateLandTable(response.lands);
       } else {
         alert(response.message);
       }
@@ -286,9 +286,9 @@ function searchHouses() {
 
 // Add the following functions
 
-function openSellModal(houseId) {
+function openSellModal(landId) {
   $("#sellModal").show();
-  $("#sellHouseId").val(houseId);
+  $("#sellLandId").val(landId);
 }
 
 function closeSellModal() {
@@ -299,8 +299,8 @@ function closeSellModal() {
   $("#paymentStatusSell").val("paid");
 }
 
-function sellHouse() {
-  var houseId = $("#sellHouseId").val();
+function sellLand() {
+  var landId = $("#sellLandId").val();
   var buyerName = $("#buyerName").val();
   var buyerPhone = $("#buyerPhone").val();
   var paymentStatus = $("#paymentStatusSell").val();
@@ -309,31 +309,31 @@ function sellHouse() {
     type: "POST",
     url: "api/sell_and_rent.php",
     data: {
-      house_id: houseId,
+      land_id: landId,
       buyer_name: buyerName,
       buyer_phone: buyerPhone,
       payment_status: paymentStatus,
-      house_availability: "sold",
+      land_availability: "sold",
     },
     dataType: "json",
     success: function (response) {
       if (response.status === "success") {
-        alert("House sold successfully");
+        alert("Land sold successfully");
         closeSellModal();
-        fetchHouses();
+        fetchLands();
       } else {
-        alert("Error selling house: " + response.message);
+        alert("Error selling land: " + response.message);
       }
     },
     error: function (xhr, status, error) {
-      alert("Error selling house. Status: " + status + ", Error: " + error);
+      alert("Error selling land. Status: " + status + ", Error: " + error);
     },
   });
 }
 
-function openRentModal(houseId) {
+function openRentModal(landId) {
   $("#rentModal").show();
-  $("#rentHouseId").val(houseId);
+  $("#rentLandId").val(landId);
 }
 function closeRentModal() {
   $("#rentModal").hide();
@@ -343,8 +343,8 @@ function closeRentModal() {
   $("#paymentStatusRent").val("paid");
 }
 
-function rentHouse() {
-  var houseId = $("#rentHouseId").val();
+function rentLand() {
+  var landId = $("#rentLandId").val();
   var tenantName = $("#tenantName").val();
   var tenantPhone = $("#tenantPhone").val();
   var paymentStatus = $("#paymentStatusRent").val();
@@ -353,24 +353,24 @@ function rentHouse() {
     type: "POST",
     url: "api/sell_and_rent.php",
     data: {
-      house_id: houseId,
+      land_id: landId,
       buyer_name: tenantName,
       buyer_phone: tenantPhone,
       payment_status: paymentStatus,
-      house_availability: "rented",
+      land_availability: "rented",
     },
     dataType: "json",
     success: function (response) {
       if (response.status === "success") {
-        alert("House rented successfully");
+        alert("Land rented successfully");
         closeRentModal();
-        fetchHouses();
+        fetchLands();
       } else {
-        alert("Error renting house: " + response.message);
+        alert("Error renting land: " + response.message);
       }
     },
     error: function (xhr, status, error) {
-      alert("Error renting house. Status: " + status + ", Error: " + error);
+      alert("Error renting land. Status: " + status + ", Error: " + error);
     },
   });
 }

@@ -5,7 +5,7 @@ include '../../db/db_connection.php';
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     parse_str(file_get_contents("php://input"), $_PUT);
 
-    $houseId = $_PUT['house_id'];
+    $apartmentId = $_PUT['apartment_id'];
     $newLocation = $_PUT['location'];
     $newArea = $_PUT['area'];
     $newWidth = $_PUT['width'];
@@ -29,28 +29,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     }
 
     // Check if there are no changes
-    $stmtCheckChanges = $conn->prepare("SELECT * FROM houses WHERE house_id = ?");
-    $stmtCheckChanges->bind_param("i", $houseId);
+    $stmtCheckChanges = $conn->prepare("SELECT * FROM apartments WHERE apartment_id = ?");
+    $stmtCheckChanges->bind_param("i", $apartmentId);
     $stmtCheckChanges->execute();
     $resultCheckChanges = $stmtCheckChanges->get_result()->fetch_assoc();
     $stmtCheckChanges->close();
 
     if (
-        $resultCheckChanges['house_location'] == $newLocation &&
+        $resultCheckChanges['apartment_location'] == $newLocation &&
         $resultCheckChanges['seller_name'] == $newSellerName &&
         $resultCheckChanges['seller_phone'] == $newSellerPhone &&
-        $resultCheckChanges['house_area'] == $newArea &&
-        $resultCheckChanges['house_width'] == $newWidth &&
-        $resultCheckChanges['house_length'] == $newLength &&
-        $resultCheckChanges['house_availability'] == $newAvailability &&
-        $resultCheckChanges['house_status'] == $newStatus &&
-        $resultCheckChanges['house_price'] == $newPrice
+        $resultCheckChanges['apartment_area'] == $newArea &&
+        $resultCheckChanges['apartment_width'] == $newWidth &&
+        $resultCheckChanges['apartment_length'] == $newLength &&
+        $resultCheckChanges['apartment_availability'] == $newAvailability &&
+        $resultCheckChanges['apartment_status'] == $newStatus &&
+        $resultCheckChanges['apartment_price'] == $newPrice
     ) {
         // No changes made, consider it as a success
         $response = array('status' => 'success', 'message' => 'No changes made');
     } else {
-        $stmt = $conn->prepare("UPDATE houses SET house_location = ?, seller_name = ?, seller_phone = ?, house_area = ?, house_width = ?, house_length = ?, 
-        house_availability = ?, house_price = ?, house_status = ? WHERE house_id = ?");
+        $stmt = $conn->prepare("UPDATE apartments SET apartment_location = ?, seller_name = ?, seller_phone = ?, apartment_area = ?, apartment_width = ?, apartment_length = ?, 
+        apartment_availability = ?, apartment_price = ?, apartment_status = ? WHERE apartment_id = ?");
         $stmt->bind_param(
             "ssiiiisisi",
             $newLocation,
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             $newAvailability,
             $newPrice,
             $newStatus,
-            $houseId
+            $apartmentId
         );
 
         // Log the SQL query for debugging purposes
@@ -74,9 +74,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         error_log("Affected Rows: " . $stmt->affected_rows);
 
         if ($stmt->affected_rows > 0) {
-            $response = array('status' => 'success', 'message' => 'House updated successfully');
+            $response = array('status' => 'success', 'message' => 'Apartment updated successfully');
         } else {
-            $response = array('status' => 'error', 'message' => 'Failed to update house');
+            $response = array('status' => 'error', 'message' => 'Failed to update apartment');
         }
     }
 

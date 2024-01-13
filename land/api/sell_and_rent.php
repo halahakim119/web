@@ -2,19 +2,19 @@
 include '../../db/db_connection.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $houseId = $_POST['house_id'];
+    $landId = $_POST['land_id'];
     $buyerName = $_POST['buyer_name'];
     $buyerPhone = $_POST['buyer_phone'];
     $paymentStatus = $_POST['payment_status'];
-    $houseAvailability = $_POST['house_availability'];
-    $property_type = 'house';
+    $landAvailability = $_POST['land_availability'];
+    $property_type = 'land';
 
     // Prepare the statements
     $stmtRentedAndSold = $conn->prepare("INSERT INTO rented_and_sold (property_id, buyer_name, buyer_phone, payment_status, property_type, property_availability) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmtRentedAndSold->bind_param("isisss", $houseId, $buyerName, $buyerPhone, $paymentStatus, $property_type, $houseAvailability);
+    $stmtRentedAndSold->bind_param("isisss", $landId, $buyerName, $buyerPhone, $paymentStatus, $property_type, $landAvailability);
 
-    $stmtHouses = $conn->prepare("UPDATE houses SET house_availability = 'not available' WHERE house_id = ?");
-    $stmtHouses->bind_param("i", $houseId);
+    $stmtLands = $conn->prepare("UPDATE lands SET land_availability = 'not available' WHERE land_id = ?");
+    $stmtLands->bind_param("i", $landId);
 
     // Start a transaction
     $conn->begin_transaction();
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmtRentedAndSold->execute();
 
         // Execute the second query
-        $stmtHouses->execute();
+        $stmtLands->execute();
 
         // Commit the transaction
         $conn->commit();
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } finally {
         // Close the prepared statements
         $stmtRentedAndSold->close();
-        $stmtHouses->close();
+        $stmtLands->close();
     }
 
     header('Content-Type: application/json');
